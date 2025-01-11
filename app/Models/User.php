@@ -17,11 +17,17 @@ class User extends Authenticatable implements JWTSubject
         'email',
         'password',
         'role_id',
+        'partner_id',
     ];
 
     public function role()
     {
         return $this->belongsTo(Role::class);
+    }
+
+    public function partner()
+    {
+        return $this->belongsTo(Partner::class);
     }
 
     protected $hidden = [
@@ -36,14 +42,14 @@ class User extends Authenticatable implements JWTSubject
 
     public function getJWTIdentifier()
     {
-      return $this->getKey();
+        return $this->getKey();
     }
 
     public function getJWTCustomClaims()
     {
-      return [
-        'email'=>$this->email,
-        'name'=>$this->name
-      ];
+        return [
+            'email' => $this->email,
+            'name' => $this->name
+        ];
     }
 }

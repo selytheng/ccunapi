@@ -27,6 +27,7 @@ class AuthController extends Controller
             $registerUserData = $request->validate([
                 'name'          => 'required|string',
                 'email'         => 'required|string|email|unique:users',
+                'partner_id'    => 'required|string',
                 'password'      => 'required|min:8',
                 'c_password'    => 'required|same:password',
             ]);
@@ -35,9 +36,10 @@ class AuthController extends Controller
                 'name'      => $registerUserData['name'],
                 'role_id'   => 2, // Static role_id
                 'email'     => $registerUserData['email'],
+                'partner_id'     => $registerUserData['partner_id'],
                 'password'  => Hash::make($registerUserData['password']),
-                'created_at'=> Carbon::now('Asia/Phnom_Penh'),
-                'updated_at'=> Carbon::now('Asia/Phnom_Penh'),
+                'created_at' => Carbon::now('Asia/Phnom_Penh'),
+                'updated_at' => Carbon::now('Asia/Phnom_Penh'),
             ]);
 
             return response()->json([
@@ -118,15 +120,16 @@ class AuthController extends Controller
     }
 
     //delete user
-    public function delete($id){
-        try{
+    public function delete($id)
+    {
+        try {
             $deleteUser = User::find($id);
-            if (!$deleteUser){
-                return response()->json(['message'=> 'User not found.'], 404);
+            if (!$deleteUser) {
+                return response()->json(['message' => 'User not found.'], 404);
             }
             $deleteUser->delete();
-            
-            return response()->json(['message'=> 'User deleted.'], 200);
+
+            return response()->json(['message' => 'User deleted.'], 200);
         } catch (ValidationException $e) {
             return response()->json([
                 'message' => 'Validation Error',
@@ -152,7 +155,8 @@ class AuthController extends Controller
         }
     }
 
-    public function allUser(){
+    public function allUser()
+    {
         $users = User::all();
         return response()->json($users, 200);
     }
@@ -172,7 +176,7 @@ class AuthController extends Controller
 
     public function refresh()
     {
-        // When access token will be expired, we are going to generate a new one wit this function 
+        // When access token will be expired, we are going to generate a new one wit this function
         // and return it here in response
         return $this->respondWithToken(auth()->refresh());
     }
