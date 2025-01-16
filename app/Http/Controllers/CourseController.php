@@ -89,11 +89,11 @@ class CourseController extends Controller
         try {
             $validator = $req->validate([
                 'name'          => 'required|string',
-                'major_id'   => 'integer|exists:majors,id',
-                'year_id'   => 'integer|exists:years,id',
+                'major_id'      => 'integer|exists:majors,id',
+                'year_id'       => 'integer|exists:years,id',
                 'image'         => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-                'description'     => 'text',
-                'link'     => 'string',
+                'description'   => 'nullable|string',  // Changed to nullable
+                'link'           => 'nullable|string',
             ]);
 
             $updateCourse = Course::find($id);
@@ -104,10 +104,10 @@ class CourseController extends Controller
             // Handle image upload if present
             if ($req->hasFile('image')) {
                 $image = FileUploadController::storeImage($req->file('image'), 'uploads/courses');
-                $validator['image'] = $image;
+                $validator['image'] = $image; // Add the image path to the data
             }
 
-            // Update product with timezone conversion
+            // Update the course with validated data and handle the update process
             $updateCourse->update(array_merge($validator, [
                 'updated_at' => Carbon::now('Asia/Phnom_Penh'),
             ]));
