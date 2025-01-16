@@ -16,6 +16,10 @@ class Major extends Model
     {
         return $this->hasMany(Course::class);
     }
+    public function events()
+    {
+        return $this->hasMany(Event::class);
+    }
     public function partner()
     {
         return $this->belongsTo(Partner::class);

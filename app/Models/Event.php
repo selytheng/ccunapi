@@ -2,13 +2,20 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Event extends Model
 {
-    
+    use HasFactory;
+
     protected $fillable = [
-        'major_id', 'year_id', 'name', 'description', 'image', 'link_registeration'
+        'major_id',
+        'year_id',
+        'name',
+        'description',
+        'image',
+        'link',
     ];
 
     public function major()
@@ -19,5 +26,10 @@ class Event extends Model
     public function year()
     {
         return $this->belongsTo(Year::class);
+    }
+
+    public function setNameAttribute($value)
+    {
+        $this->attributes['name'] = ucwords($value);
     }
 }
