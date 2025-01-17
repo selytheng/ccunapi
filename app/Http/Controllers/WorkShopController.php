@@ -3,19 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Services\FileUploadController;
-use App\Models\Event;
+use App\Models\Workshop;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
 
-class EventController extends Controller
+class WorkShopController extends Controller
 {
     public function create(Request $req)
     {
         try {
-            $validator = $req->validate([ 
+            $validator = $req->validate([
                 'name'          => 'required|string',
                 'major_id'   => 'required|integer|exists:majors,id',
                 'year_id'   => 'required|integer|exists:years,id',
@@ -29,12 +29,12 @@ class EventController extends Controller
             $validator['image'] = $image;
 
             // Create product with timezone conversion
-            $event = Event::create(array_merge($validator, [
+            $workshop = Workshop::create(array_merge($validator, [
                 'created_at' => Carbon::now('Asia/Phnom_Penh'),
                 'updated_at' => Carbon::now('Asia/Phnom_Penh'),
             ]));
 
-            return response()->json($event, Response::HTTP_CREATED);
+            return response()->json($workshop, Response::HTTP_CREATED);
         } catch (ValidationException $e) {
             return $this->handleValidationException($e);
         } catch (\Exception $e) {
@@ -47,10 +47,10 @@ class EventController extends Controller
         // validate name as an input to search the product
         $name = $req->input('name');
         if ($name) {    // search product
-            $products = Event::where('name', 'like', '%' . $name . '%')->get();
+            $products = Workshop::where('name', 'like', '%' . $name . '%')->get();
             return response()->json($products, Response::HTTP_OK);
         } else {        //get all product
-            $products = Event::all();
+            $products = Workshop::all();
             return response()->json($products, Response::HTTP_OK);
         }
     }
@@ -58,20 +58,20 @@ class EventController extends Controller
     {
         try {
             // Fetch all courses with their associated partner_id
-            $events = Event::with('major.partner')->get()->map(function ($event) {
+            $workshop = Workshop::with('major.partner')->get()->map(function ($workshop) {
                 return [
-                    'id' => $event->id,
-                    'name' => $event->name,
-                    'description' => $event->description,
-                    'image' => $event->image,
-                    'link' => $event->link,
-                    'major_id' => $event->major_id,
-                    'year_id' => $event->year_id,
-                    'partner_id' => $event->major->partner->id ?? null, // Use null if no partner is found
+                    'id' => $workshop->id,
+                    'name' => $workshop->name,
+                    'description' => $workshop->description,
+                    'image' => $workshop->image,
+                    'link' => $workshop->link,
+                    'major_id' => $workshop->major_id,
+                    'year_id' => $workshop->year_id,
+                    'partner_id' => $workshop->major->partner->id ?? null, // Use null if no partner is found
                 ];
             });
 
-            return response()->json($events, Response::HTTP_OK);
+            return response()->json($workshop, Response::HTTP_OK);
         } catch (\Exception $e) {
             return $this->handleUnexpectedException($e);
         }
@@ -80,7 +80,7 @@ class EventController extends Controller
 
     public function getById($id)
     {
-        $produtcs = Event::find($id);
+        $produtcs = Workshop::find($id);
         return response()->json($produtcs, Response::HTTP_OK);
     }
 
@@ -96,8 +96,8 @@ class EventController extends Controller
                 'link'           => 'nullable|string',
             ]);
 
-            $updateEvent= Event::find($id);
-            if (!$updateEvent) {
+            $updateNews= Workshop::find($id);
+            if (!$updateNews) {
                 return response()->json(['message' => 'Event not found'], Response::HTTP_NOT_FOUND);
             }
 
@@ -108,11 +108,11 @@ class EventController extends Controller
             }
 
             // Update the course with validated data and handle the update process
-            $updateEvent->update(array_merge($validator, [
+            $updateNews->update(array_merge($validator, [
                 'updated_at' => Carbon::now('Asia/Phnom_Penh'),
             ]));
 
-            return response()->json($updateEvent, Response::HTTP_OK);
+            return response()->json($updateNews, Response::HTTP_OK);
         } catch (ValidationException $e) {
             return $this->handleValidationException($e);
         } catch (\Exception $e) {
@@ -124,12 +124,12 @@ class EventController extends Controller
     public function delete($id)
     {
         try {
-            $deleteEvent= Event::find($id);
-            if (!$deleteEvent) {
-                return response()->json(['message' => 'Event not found'], Response::HTTP_NOT_FOUND);
+            $deleteNews= Workshop::find($id);
+            if (!$deleteNews) {
+                return response()->json(['message' => 'Workshop not found'], Response::HTTP_NOT_FOUND);
             }
-            $deleteEvent->delete();
-            return response()->json(['message' => 'Event deleted successfull.'], Response::HTTP_OK);
+            $deleteNews->delete();
+            return response()->json(['message' => 'Workshop deleted successfull.'], Response::HTTP_OK);
         } catch (ValidationException $e) {
             return $this->handleValidationException($e);
         } catch (\Exception $e) {
