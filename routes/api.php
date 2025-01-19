@@ -22,6 +22,8 @@ Route::group([
     Route::put('/{id}', [AuthController::class, 'update'])->middleware('auth:api')->name('update');
     Route::delete('/{id}', [AuthController::class, 'delete'])->middleware('auth:api')->name('delete');
     Route::post('/allUser', [AuthController::class, 'allUser'])->middleware('auth:api')->name('allUser');
+    Route::post('/changepassword', [AuthController::class, 'selfChangePassword'])->middleware('auth:api')->name('changepassword');
+    Route::post('/changeinfo', [AuthController::class, 'selfChangeInfo'])->middleware('auth:api')->name('changeinfo');
 });
 
 Route::group([
