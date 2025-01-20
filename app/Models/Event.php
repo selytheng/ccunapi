@@ -7,29 +7,25 @@ use Illuminate\Database\Eloquent\Model;
 
 class Event extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
-        'major_id',
-        'year_id',
-        'name',
-        'description',
+        'title',
         'image',
-        'link',
+        'gallery_id',
+        'description',
+        'partner_id',
+        'location',
+        'status',
+        'start_date',
+        'end_date'
     ];
 
-    public function major()
+    public function partner()
     {
-        return $this->belongsTo(Major::class);
+        return $this->belongsTo(Partner::class);
     }
 
-    public function year()
+    public function gallery()
     {
-        return $this->belongsTo(Year::class);
-    }
-
-    public function setNameAttribute($value)
-    {
-        $this->attributes['name'] = ucwords($value);
+        return $this->belongsTo(Gallery::class);
     }
 }

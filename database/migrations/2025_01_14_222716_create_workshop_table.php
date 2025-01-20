@@ -6,26 +6,25 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-
-    public function up(): void
+    public function up()
     {
-        Schema::create('workshop', function (Blueprint $table) {
+        Schema::create('workshops', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('major_id');
-            $table->foreign('major_id')->references('id')->on('majors')->onDelete('cascade');
-            $table->unsignedBigInteger('year_id');
-            $table->foreign('year_id')->references('id')->on('years')->onDelete('cascade');
-            $table->string('name', 30);
-            $table->text('description');
-            $table->text('image')->nullable();
-            $table->string('link_registeration', 30);
+            $table->varchar('title');
+            $table->varchar('image');
+            $table->foreignId('gallery_id')->constrained();
+            $table->varchar('description');
+            $table->foreignId('partner_id')->constrained();
+            $table->varchar('location');
+            $table->varchar('status');
+            $table->varchar('start_date');
+            $table->varchar('end_date');
             $table->timestamps();
         });
     }
 
- 
-    public function down(): void
+    public function down()
     {
-        Schema::dropIfExists('workshop');
+        Schema::dropIfExists('workshops');
     }
 };

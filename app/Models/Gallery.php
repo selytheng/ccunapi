@@ -5,18 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Partner extends Model
+class Gallery extends Model
 {
-    protected $fillable = ['name', 'logo', 'Description'];
+    protected $fillable = ['partner_id'];
 
-    public function users()
+    public function partner()
     {
-        return $this->hasMany(User::class);
+        return $this->belongsTo(Partner::class);
     }
 
-    public function majors()
+    public function galleryDetails()
     {
-        return $this->hasMany(Major::class);
+        return $this->hasMany(GalleryDetail::class);
     }
 
     public function events()
@@ -32,10 +32,5 @@ class Partner extends Model
     public function trainings()
     {
         return $this->hasMany(Training::class);
-    }
-
-    public function galleries()
-    {
-        return $this->hasMany(Gallery::class);
     }
 }
