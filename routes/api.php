@@ -31,7 +31,7 @@ Route::group([
     'prefix' => 'partners'
 ],  function () {
     Route::post('/', [PartnerController::class, 'create'])->middleware(Authorization::class . ':admin,partner');
-    Route::get('/', [PartnerController::class, 'get'])->middleware(Authorization::class . ':admin,partner');
+    Route::get('/', [PartnerController::class, 'get']);
     Route::get('/{id}', [PartnerController::class, 'getById'])->middleware(Authorization::class . ':admin,partner');
     Route::patch('/{id}', [PartnerController::class, 'update'])->middleware(Authorization::class . ':admin,partner');
     Route::delete('/{id}', [PartnerController::class, 'delete'])->middleware(Authorization::class . ':admin,partner');
@@ -44,7 +44,7 @@ Route::group([
     'prefix' => 'majors'
 ],  function () {
     Route::get('/years', [YearController::class, 'getAll']);
-    Route::post('/', [MajorController::class, 'create'])->middleware(Authorization::class . ':admin,partner');
+    Route::post('/', [MajorController::class, 'create']);
     Route::get('/', [MajorController::class, 'get'])->middleware(Authorization::class . ':admin,partner');
     Route::get('/{id}', [MajorController::class, 'getById'])->middleware(Authorization::class . ':admin,partner');
     Route::patch('/{id}', [MajorController::class, 'update'])->middleware(Authorization::class . ':admin,partner');
@@ -57,7 +57,7 @@ Route::group([
     'prefix' => 'courses'
 ], function () {
     Route::post('/', [CourseController::class, 'create'])->middleware(Authorization::class . ':admin,partner');
-    Route::get('/', [CourseController::class, 'get'])->middleware(Authorization::class . ':admin,partner');
+    Route::get('/', [CourseController::class, 'get']);
     Route::get('/all', [CourseController::class, 'getAllCourses'])->middleware(Authorization::class . ':admin,partner');
     Route::get('/{id}', [CourseController::class, 'getById'])->middleware(Authorization::class . ':admin,partner');
     Route::put('/{id}', [CourseController::class, 'update'])->middleware(Authorization::class . ':admin,partner');
