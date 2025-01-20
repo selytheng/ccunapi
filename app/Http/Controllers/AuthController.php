@@ -215,7 +215,7 @@ class AuthController extends Controller
             if (!Hash::check($request->current_password, $user->password)) {
                 return response()->json([
                     'message' => 'Current password is incorrect'
-                ], Response::HTTP_UNAUTHORIZED);
+                ], Response::HTTP_BAD_REQUEST); // Changed to 400
             }
 
             // Update password
@@ -256,7 +256,7 @@ class AuthController extends Controller
             if (!Hash::check($request->password, $user->password)) {
                 return response()->json([
                     'message' => 'Password is incorrect'
-                ], Response::HTTP_UNAUTHORIZED);
+                ], Response::HTTP_BAD_REQUEST); // Changed to 400
             }
 
             // Update user information
