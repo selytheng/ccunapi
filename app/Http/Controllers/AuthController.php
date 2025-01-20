@@ -102,14 +102,14 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'password' => 'nullable|string|min:6|confirmed',
-            'role_id' => 'required|exists:roles,id',
+            'partner_id' => 'required|exists:partners,id',
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
-        $user->update($request->only(['name', 'email', 'role_id']));
+        $user->update($request->only(['name', 'email', 'partner_id']));
 
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);
@@ -190,5 +190,89 @@ class AuthController extends Controller
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 180
         ]);
+    }
+    public function selfChangePassword(Request $request)
+    {
+        try {
+            // Validate the request
+            $validator = Validator::make($request->all(), [
+                'current_password' => 'required|string',
+                'new_password' => 'required|string|min:8|different:current_password',
+                'confirm_password' => 'required|string|same:new_password'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'message' => 'Validation Error',
+                    'errors' => $validator->errors()
+                ], Response::HTTP_BAD_REQUEST);
+            }
+
+            // Get the authenticated user
+            $user = Auth::guard('api')->user();
+
+            // Verify current password
+            if (!Hash::check($request->current_password, $user->password)) {
+                return response()->json([
+                    'message' => 'Current password is incorrect'
+                ], Response::HTTP_BAD_REQUEST); // Changed to 400
+            }
+
+            // Update password
+            $user->password = Hash::make($request->new_password);
+            $user->save();
+
+            return response()->json([
+                'message' => 'Password successfully updated'
+            ], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Server Error'
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function selfChangeInfo(Request $request)
+    {
+        try {
+            // Get the authenticated user
+            $user = Auth::guard('api')->user();
+
+            // Validate the request
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+                'password' => 'required|string'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'message' => 'Validation Error',
+                    'errors' => $validator->errors()
+                ], Response::HTTP_BAD_REQUEST);
+            }
+
+            // Verify password
+            if (!Hash::check($request->password, $user->password)) {
+                return response()->json([
+                    'message' => 'Password is incorrect'
+                ], Response::HTTP_BAD_REQUEST); // Changed to 400
+            }
+
+            // Update user information
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->updated_at = Carbon::now('Asia/Phnom_Penh');
+            $user->save();
+
+            return response()->json([
+                'message' => 'User information successfully updated',
+                'user' => $user
+            ], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Server Error'
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }
