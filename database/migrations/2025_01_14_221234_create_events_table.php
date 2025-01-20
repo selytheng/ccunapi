@@ -4,21 +4,21 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+class CreateEventsTable extends Migration
 {
     public function up()
     {
         Schema::create('events', function (Blueprint $table) {
             $table->id();
-            $table->varchar('title');
-            $table->varchar('image');
-            $table->foreignId('gallery_id')->constrained();
-            $table->varchar('description');
-            $table->foreignId('partner_id')->constrained();
-            $table->varchar('location');
-            $table->varchar('status');
-            $table->varchar('start_date');
-            $table->varchar('end_date');
+            $table->string('title');
+            $table->string('image');
+            $table->json('gallery')->nullable(); // Store multiple image paths as JSON
+            $table->text('description');
+            $table->foreignId('partner_id')->constrained('partners')->onDelete('cascade');
+            $table->string('location');
+            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->timestamp('start_date');
+            $table->timestamp('end_date');
             $table->timestamps();
         });
     }
@@ -27,4 +27,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('events');
     }
-};
+}

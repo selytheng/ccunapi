@@ -7,6 +7,7 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\MajorController;
 use App\Http\Controllers\YearController;
+use App\Http\Controllers\EventController;
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\Authorization;
 
@@ -62,4 +63,15 @@ Route::group([
     Route::get('/{id}', [CourseController::class, 'getById'])->middleware(Authorization::class . ':admin,partner');
     Route::put('/{id}', [CourseController::class, 'update'])->middleware(Authorization::class . ':admin,partner');
     Route::delete('/{id}', [CourseController::class, 'delete'])->middleware(Authorization::class . ':admin,partner');
+});
+
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'events'
+], function () {
+    Route::post('/', [EventController::class, 'create'])->middleware(Authorization::class . ':admin,partner');
+    Route::get('/', [EventController::class, 'get']);
+    Route::get('/{id}', [EventController::class, 'getById']);
+    Route::post('/{id}', [EventController::class, 'update'])->middleware(Authorization::class . ':admin,partner');
+    Route::delete('/{id}', [EventController::class, 'delete'])->middleware(Authorization::class . ':admin,partner');
 });

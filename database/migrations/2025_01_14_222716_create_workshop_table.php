@@ -10,15 +10,15 @@ return new class extends Migration
     {
         Schema::create('workshops', function (Blueprint $table) {
             $table->id();
-            $table->varchar('title');
-            $table->varchar('image');
+            $table->string('title');
+            $table->string('image');
             $table->foreignId('gallery_id')->constrained();
-            $table->varchar('description');
+            $table->string('description');
             $table->foreignId('partner_id')->constrained();
-            $table->varchar('location');
-            $table->varchar('status');
-            $table->varchar('start_date');
-            $table->varchar('end_date');
+            $table->string('location');
+            $table->string('status');
+            $table->string('start_date');
+            $table->string('end_date');
             $table->timestamps();
         });
     }

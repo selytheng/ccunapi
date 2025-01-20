@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Event extends Model
@@ -10,7 +9,7 @@ class Event extends Model
     protected $fillable = [
         'title',
         'image',
-        'gallery_id',
+        'gallery',
         'description',
         'partner_id',
         'location',
@@ -19,13 +18,14 @@ class Event extends Model
         'end_date'
     ];
 
+    protected $casts = [
+        'gallery' => 'array',
+        'start_date' => 'datetime',
+        'end_date' => 'datetime'
+    ];
+
     public function partner()
     {
         return $this->belongsTo(Partner::class);
-    }
-
-    public function gallery()
-    {
-        return $this->belongsTo(Gallery::class);
     }
 }
