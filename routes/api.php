@@ -38,6 +38,7 @@ Route::group([
     Route::delete('/{id}', [PartnerController::class, 'delete'])->middleware(Authorization::class . ':admin,partner');
     Route::get('/{id}/majors', [PartnerController::class, 'getAllMajorInPartner'])->middleware(Authorization::class . ':admin,partner');
     Route::get('/{id}/courses', [PartnerController::class, 'getAllCoursesInPartner'])->middleware(Authorization::class . ':admin,partner');
+    Route::get('/{id}/events', [PartnerController::class, 'getAllEventsInPartner'])->middleware(Authorization::class . ':admin,partner');
 });
 
 Route::group([

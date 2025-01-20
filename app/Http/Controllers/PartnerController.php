@@ -78,6 +78,32 @@ class PartnerController extends Controller
         }
     }
 
+    public function getAllEventsInPartner($id)
+    {
+        try {
+            $partner = Partner::find($id);
+            if (!$partner) {
+                return response()->json(['message' => 'Partner not found.'], Response::HTTP_NOT_FOUND);
+            }
+
+            // Retrieve all events related to the partner
+            $events = $partner->events->map(function ($event) {
+                return [
+                    'title'       => $event->title,
+                    'description' => $event->description,
+                    'image'       => $event->image,
+                ];
+            });
+
+            return response()->json($events, Response::HTTP_OK);
+        } catch (ValidationException $e) {
+            return $this->handleValidationException($e);
+        } catch (\Exception $e) {
+            return $this->handleUnexpectedException($e);
+        }
+    }
+
+
     public function getById($id)
     {
         $partners = Partner::find($id);

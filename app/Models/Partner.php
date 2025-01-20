@@ -33,9 +33,4 @@ class Partner extends Model
     {
         return $this->hasMany(Training::class);
     }
-
-    public function galleries()
-    {
-        return $this->hasMany(Gallery::class);
-    }
 }
