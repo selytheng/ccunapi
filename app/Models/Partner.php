@@ -9,7 +9,9 @@ class Partner extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'name'
+        'name',
+        'logo',
+        'description',
     ];
     public function majors()
     {

@@ -10,7 +10,9 @@ class Major extends Model
     use HasFactory;
     protected $fillable = [
         'name',
-        'partner_id'
+        'partner_id',
+        'logo',
+        'description',
     ];
     public function courses()
     {

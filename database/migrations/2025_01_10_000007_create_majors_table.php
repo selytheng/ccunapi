@@ -16,6 +16,8 @@ return new class extends Migration
             $table->unsignedBigInteger('partner_id');
             $table->foreign('partner_id')->references('id')->on('partners')->onDelete('cascade');
             $table->string('name', 50)->unique()->nullable();
+            $table->string('logo')->nullable(); 
+            $table->text('description')->nullable(); 
             $table->timestamps();
         });
     }
