@@ -89,6 +89,7 @@ class PartnerController extends Controller
             // Retrieve all events related to the partner
             $events = $partner->events->map(function ($event) {
                 return [
+                    'id'          => $event->id,
                     'title'       => $event->title,
                     'description' => $event->description,
                     'image'       => $event->image,
