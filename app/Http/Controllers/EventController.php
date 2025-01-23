@@ -163,14 +163,28 @@ class EventController extends Controller
 
             $event = Event::find($id);
             if (!$event) {
-                return response()->json(['message' => 'Event not found'], Response::HTTP_NOT_FOUND);
+                return response()->json([
+                    'message' => 'Validation Error',
+                    'errors' => [
+                        'event' => ['Event not found.']
+                    ]
+                ], Response::HTTP_NOT_FOUND);
             }
 
             if ($req->hasFile('addgalleries')) {
                 $gallery = $event->gallery ?? [];
                 foreach ($req->file('addgalleries') as $file) {
-                    $newImage = FileUploadController::storeImage($file, 'uploads/events/gallery');
-                    $gallery[] = $newImage;
+                    try {
+                        $newImage = FileUploadController::storeImage($file, 'uploads/events/gallery');
+                        $gallery[] = $newImage;
+                    } catch (\Exception $e) {
+                        return response()->json([
+                            'message' => 'Validation Error',
+                            'errors' => [
+                                'image' => ['Error uploading image: ' . $e->getMessage()]
+                            ]
+                        ], Response::HTTP_INTERNAL_SERVER_ERROR);
+                    }
                 }
                 $event->gallery = $gallery;
                 $event->updated_at = Carbon::now('Asia/Phnom_Penh');
@@ -179,11 +193,24 @@ class EventController extends Controller
                 return response()->json($event, Response::HTTP_OK);
             }
 
-            return response()->json(['message' => 'No images to add'], Response::HTTP_BAD_REQUEST);
+            return response()->json([
+                'message' => 'Validation Error',
+                'errors' => [
+                    'images' => ['No images to add.']
+                ]
+            ], Response::HTTP_BAD_REQUEST);
         } catch (ValidationException $e) {
-            return $this->handleValidationException($e);
+            return response()->json([
+                'message' => 'Validation Error',
+                'errors' => $e->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
         } catch (\Exception $e) {
-            return $this->handleUnexpectedException($e);
+            return response()->json([
+                'message' => 'Validation Error',
+                'errors' => [
+                    'server' => ['An unexpected error occurred.']
+                ]
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
