@@ -139,14 +139,16 @@ class PartnerController extends Controller
                 return response()->json(['message' => 'Partner not found.'], Response::HTTP_NOT_FOUND);
             }
     
-          
+            // Handle logo upload if it exists
             if ($req->hasFile('logo')) {
                 $logoPath = $req->file('logo')->store('uploads/partners', 'public');
                 $validatedData['logo'] = $logoPath; 
             }
     
+            // Update partner with validated data
             $updatePartner->update($validatedData);
     
+            // Return updated partner
             return response()->json($updatePartner, Response::HTTP_OK);
     
         } catch (ValidationException $e) {

@@ -127,35 +127,32 @@ class PartnerController extends Controller
     public function update(Request $req, $id)
     {
         try {
+            // Validate incoming request data
             $validatedData = $req->validate([
-                'name'          => ['required', 'string', Rule::unique('partners')],
-                'description' => ['nullable', 'string'], 
-                'logo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+                'name' => ['nullable', 'string', Rule::unique('partners')->ignore($id)], // Use `ignore` to allow the current partner to have the same name
+                'description' => ['nullable', 'string'], // Assuming you might want to update description as well
+                'logo' => ['nullable', 'string'] // Optional, assuming you want to handle logo as well
             ]);
-    
+
+            // Find the partner by id
             $updatePartner = Partner::find($id);
-    
+
             if (!$updatePartner) {
                 return response()->json(['message' => 'Partner not found.'], Response::HTTP_NOT_FOUND);
             }
-    
-          
-            if ($req->hasFile('logo')) {
-                $logoPath = $req->file('logo')->store('uploads/partners', 'public');
-                $validatedData['logo'] = $logoPath; 
-            }
-    
+
+            // Update partner with validated data
             $updatePartner->update($validatedData);
-    
+
+            // Return updated partner
             return response()->json($updatePartner, Response::HTTP_OK);
-    
+
         } catch (ValidationException $e) {
             return $this->handleValidationException($e);
         } catch (\Exception $e) {
             return $this->handleUnexpectedException($e);
         }
     }
-    
 
 
     public function delete($id)
