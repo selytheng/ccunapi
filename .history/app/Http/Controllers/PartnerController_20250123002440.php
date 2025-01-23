@@ -29,8 +29,9 @@ class PartnerController extends Controller
 
         $data = $validator->validated();
         if ($req->hasFile('logo')) {
+            // Store the logo and return the path without the leading slash
             $logo = $this->storeImage($req->file('logo'), 'uploads/partners');
-            $data['logo'] = 'storage/' . $logo; 
+            $data['logo'] = 'storage/' . $logo; // Make sure to add 'storage/' prefix without a leading slash
         }
 
         $partner = Partner::create($data);
@@ -186,10 +187,22 @@ class PartnerController extends Controller
         );
     }
 
+    // protected function storeImage($file, $folder)
+    // {
+    //     // Ensure the file is valid
+    //     if ($file->isValid()) {
+    //         // Store the file in the given folder and return the path
+    //         $path = $file->store('public/' . $folder);
+    //         return Storage::url($path); // Return the URL path to the image
+    //     }
+
+    //     throw new \Exception('Invalid file upload');
+    // }
     protected function storeImage($file, $folder)
     {
+        // Store the image in the 'public' disk and return the relative path
         $path = $file->store($folder, 'public');
-        return $path; 
+        return $path; // This will return something like 'uploads/partners/filename.jpg'
     }
 
 }

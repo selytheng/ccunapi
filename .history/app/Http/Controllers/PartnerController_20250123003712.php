@@ -124,27 +124,28 @@ class PartnerController extends Controller
         return response()->json($partners, Response::HTTP_OK);
     }
 
-    public function update(Request $req, $id)
-    {
-        try {
-            $validator = $req->validate([
-                'name'          => ['required', 'string', Rule::unique('partners')],
-            ]);
+    // public function update(Request $req, $id)
+    // {
+    //     try {
+    //         $validator = $req->validate([
+    //             'name'          => ['required', 'string', Rule::unique('partners')],
+    //         ]);
 
-            $updatePartner = Partner::find($id);
+    //         $updatePartner = Partner::find($id);
 
-            if (!$updatePartner) {
-                return response()->json(['message' => 'Partner not found.'], Response::HTTP_NOT_FOUND);
-            }
+    //         if (!$updatePartner) {
+    //             return response()->json(['message' => 'Partner not found.'], Response::HTTP_NOT_FOUND);
+    //         }
 
-            $updatePartner->update($validator);
-            return response()->json($updatePartner, Response::HTTP_CREATED);
-        } catch (ValidationException $e) {
-            return $this->handleValidationException($e);
-        } catch (\Exception $e) {
-            return $this->handleUnexpectedException($e);
-        }
-    }
+    //         $updatePartner->update($validator);
+    //         return response()->json($updatePartner, Response::HTTP_CREATED);
+    //     } catch (ValidationException $e) {
+    //         return $this->handleValidationException($e);
+    //     } catch (\Exception $e) {
+    //         return $this->handleUnexpectedException($e);
+    //     }
+    // }
+    
 
     public function delete($id)
     {

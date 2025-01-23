@@ -162,7 +162,7 @@ class EventController extends Controller
         Log::error('Unexpected error occurred', ['exception' => $e]);
         return response()->json(
             [
-                'error' => 'An unexpected error occurred!!'
+                'error' => 'An unexpected error occurred.'
             ],
             Response::HTTP_INTERNAL_SERVER_ERROR
         );

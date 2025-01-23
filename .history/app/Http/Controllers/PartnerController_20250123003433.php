@@ -188,8 +188,9 @@ class PartnerController extends Controller
 
     protected function storeImage($file, $folder)
     {
+        // Store the image in the 'public' disk and return the relative path
         $path = $file->store($folder, 'public');
-        return $path; 
+        return $path; // This will return something like 'uploads/partners/filename.jpg'
     }
 
 }

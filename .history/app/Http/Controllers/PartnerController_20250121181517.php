@@ -8,42 +8,32 @@ use Illuminate\Http\Response;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Validator;
-use Storage;
 
 class PartnerController extends Controller
 {
     public function create(Request $req)
-{
-    try {
-        $validator = Validator::make($req->all(), [
-            'name'        => ['required', 'string', Rule::unique('partners')],
-            'description' => ['required', 'string'],  
-            'logo'        => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
-        ]);
+    {
+        try {
+            $validator = Validator::make($req->all(), [
+                'name'          => ['required', 'string', Rule::unique('partners')],
+            ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'errors' => $validator->errors()
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+            if ($validator->fails()) {
+                return response()->json([
+                    'errors' => $validator->errors()
+                ], Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+
+            $data = $validator->validated();
+            $partner = Partner::create($data);
+
+            return response()->json($partner, Response::HTTP_CREATED);
+        } catch (ValidationException $e) {
+            return $this->handleValidationException($e);
+        } catch (\Exception $e) {
+            return $this->handleUnexpectedException($e);
         }
-
-        $data = $validator->validated();
-        if ($req->hasFile('logo')) {
-            $logo = $this->storeImage($req->file('logo'), 'uploads/partners');
-            $data['logo'] = 'storage/' . $logo; 
-        }
-
-        $partner = Partner::create($data);
-
-        return response()->json($partner, Response::HTTP_CREATED);
-    } catch (ValidationException $e) {
-        return $this->handleValidationException($e);
-    } catch (\Exception $e) {
-        return $this->handleUnexpectedException($e);
     }
-}
-
-    
 
     public function get()
     {
@@ -177,19 +167,11 @@ class PartnerController extends Controller
 
     protected function handleUnexpectedException(\Exception $e)
     {
-        \Log::error('Unexpected error occurred: ' . $e->getMessage());
         return response()->json(
             [
-                'error' => 'An unexpected error occurred...'
+                'error' => 'An unexpected error occurred.'
             ],
             Response::HTTP_INTERNAL_SERVER_ERROR
         );
     }
-
-    protected function storeImage($file, $folder)
-    {
-        $path = $file->store($folder, 'public');
-        return $path; 
-    }
-
 }

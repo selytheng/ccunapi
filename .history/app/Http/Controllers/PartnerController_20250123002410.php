@@ -13,36 +13,42 @@ use Storage;
 class PartnerController extends Controller
 {
     public function create(Request $req)
-{
-    try {
-        $validator = Validator::make($req->all(), [
-            'name'        => ['required', 'string', Rule::unique('partners')],
-            'description' => ['required', 'string'],  
-            'logo'        => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'errors' => $validator->errors()
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+    {
+        try {
+            // Validate incoming data
+            $validator = Validator::make($req->all(), [
+                'name'          => ['required', 'string', Rule::unique('partners')],
+                'description'   => ['required', 'string'],  // Ensure description is required
+                'logo'          => ['required', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'], // Logo image validation
+            ]);
+    
+            if ($validator->fails()) {
+                return response()->json([
+                    'errors' => $validator->errors()
+                ], Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+    
+            // Get validated data
+            $data = $validator->validated();
+    
+            // Handle logo upload if provided
+            if ($req->hasFile('logo')) {
+                $logo = $this->storeImage($req->file('logo'), 'uploads/partners'); // Store the logo image
+                $data['logo'] = $logo;  // Add the logo path to the data
+            }
+    
+            // Create a new partner with the validated data
+            $partner = Partner::create($data);
+    
+            // Return the created partner
+            return response()->json($partner, Response::HTTP_CREATED);
+    
+        } catch (ValidationException $e) {
+            return $this->handleValidationException($e);
+        } catch (\Exception $e) {
+            return $this->handleUnexpectedException($e);
         }
-
-        $data = $validator->validated();
-        if ($req->hasFile('logo')) {
-            $logo = $this->storeImage($req->file('logo'), 'uploads/partners');
-            $data['logo'] = 'storage/' . $logo; 
-        }
-
-        $partner = Partner::create($data);
-
-        return response()->json($partner, Response::HTTP_CREATED);
-    } catch (ValidationException $e) {
-        return $this->handleValidationException($e);
-    } catch (\Exception $e) {
-        return $this->handleUnexpectedException($e);
     }
-}
-
     
 
     public function get()
@@ -186,10 +192,22 @@ class PartnerController extends Controller
         );
     }
 
-    protected function storeImage($file, $folder)
-    {
-        $path = $file->store($folder, 'public');
-        return $path; 
-    }
+    // protected function storeImage($file, $folder)
+    // {
+    //     // Ensure the file is valid
+    //     if ($file->isValid()) {
+    //         // Store the file in the given folder and return the path
+    //         $path = $file->store('public/' . $folder);
+    //         return Storage::url($path); // Return the URL path to the image
+    //     }
+
+    //     throw new \Exception('Invalid file upload');
+    // }
+    // protected function storeImage($file, $folder)
+    // {
+    //     // Store the image in the 'public' disk and return the relative path
+    //     $path = $file->store($folder, 'public');
+    //     return $path; // This will return something like 'uploads/partners/filename.jpg'
+    // }
 
 }
