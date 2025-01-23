@@ -127,36 +127,24 @@ class PartnerController extends Controller
     public function update(Request $req, $id)
     {
         try {
-            $validatedData = $req->validate([
+            $validator = $req->validate([
                 'name'          => ['required', 'string', Rule::unique('partners')],
-                'description' => ['nullable', 'string'], 
-                'logo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
             ]);
-    
+
             $updatePartner = Partner::find($id);
-    
+
             if (!$updatePartner) {
                 return response()->json(['message' => 'Partner not found.'], Response::HTTP_NOT_FOUND);
             }
-    
-          
-            if ($req->hasFile('logo')) {
-                $logoPath = $req->file('logo')->store('uploads/partners', 'public');
-                $validatedData['logo'] = $logoPath; 
-            }
-    
-            $updatePartner->update($validatedData);
-    
-            return response()->json($updatePartner, Response::HTTP_OK);
-    
+
+            $updatePartner->update($validator);
+            return response()->json($updatePartner, Response::HTTP_CREATED);
         } catch (ValidationException $e) {
             return $this->handleValidationException($e);
         } catch (\Exception $e) {
             return $this->handleUnexpectedException($e);
         }
     }
-    
-
 
     public function delete($id)
     {
@@ -198,10 +186,22 @@ class PartnerController extends Controller
         );
     }
 
+    // protected function storeImage($file, $folder)
+    // {
+    //     // Ensure the file is valid
+    //     if ($file->isValid()) {
+    //         // Store the file in the given folder and return the path
+    //         $path = $file->store('public/' . $folder);
+    //         return Storage::url($path); // Return the URL path to the image
+    //     }
+
+    //     throw new \Exception('Invalid file upload');
+    // }
     protected function storeImage($file, $folder)
     {
+        // Store the image in the 'public' disk and return the relative path
         $path = $file->store($folder, 'public');
-        return $path; 
+        return $path; // This will return something like 'uploads/partners/filename.jpg'
     }
 
 }

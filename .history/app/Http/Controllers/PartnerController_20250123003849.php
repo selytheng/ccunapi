@@ -124,38 +124,70 @@ class PartnerController extends Controller
         return response()->json($partners, Response::HTTP_OK);
     }
 
+    // public function update(Request $req, $id)
+    // {
+    //     try {
+    //         $validator = $req->validate([
+    //             'name'          => ['required', 'string', Rule::unique('partners')],
+    //         ]);
+
+    //         $updatePartner = Partner::find($id);
+
+    //         if (!$updatePartner) {
+    //             return response()->json(['message' => 'Partner not found.'], Response::HTTP_NOT_FOUND);
+    //         }
+
+    //         $updatePartner->update($validator);
+    //         return response()->json($updatePartner, Response::HTTP_CREATED);
+    //     } catch (ValidationException $e) {
+    //         return $this->handleValidationException($e);
+    //     } catch (\Exception $e) {
+    //         return $this->handleUnexpectedException($e);
+    //     }
+    // }
     public function update(Request $req, $id)
     {
         try {
-            $validatedData = $req->validate([
-                'name'          => ['required', 'string', Rule::unique('partners')],
-                'description' => ['nullable', 'string'], 
-                'logo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+            // Validate the input, including the logo (optional)
+            $validator = $req->validate([
+                'name'          => ['required', 'string', Rule::unique('partners')->ignore($id)],  // Ignore unique validation for current partner
+                'description' => ['required', 'string'],  
+                'logo'          => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'], // Validate logo as optional image
             ]);
-    
+
             $updatePartner = Partner::find($id);
-    
+
             if (!$updatePartner) {
                 return response()->json(['message' => 'Partner not found.'], Response::HTTP_NOT_FOUND);
             }
-    
-          
+
+            // Check if a new logo was uploaded
             if ($req->hasFile('logo')) {
+                // Delete the old logo file if it exists
+                if ($updatePartner->logo && file_exists(public_path($updatePartner->logo))) {
+                    unlink(public_path($updatePartner->logo));  // Remove the old file from the storage
+                }
+
+                // Store the new logo
                 $logoPath = $req->file('logo')->store('uploads/partners', 'public');
-                $validatedData['logo'] = $logoPath; 
+
+                // Update the logo path
+                $updatePartner->logo = 'storage/' . $logoPath;
             }
-    
-            $updatePartner->update($validatedData);
-    
+
+            // Update the other partner fields
+            $updatePartner->update([
+                'name' => $validator['name'],
+                'description' => $req->input('description', $updatePartner->description),  // Optionally update description if provided
+            ]);
+
             return response()->json($updatePartner, Response::HTTP_OK);
-    
         } catch (ValidationException $e) {
             return $this->handleValidationException($e);
         } catch (\Exception $e) {
             return $this->handleUnexpectedException($e);
         }
     }
-    
 
 
     public function delete($id)

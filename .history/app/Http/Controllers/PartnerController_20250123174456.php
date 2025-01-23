@@ -147,6 +147,7 @@ class PartnerController extends Controller
     
             $updatePartner->update($validatedData);
     
+            // Return updated partner
             return response()->json($updatePartner, Response::HTTP_OK);
     
         } catch (ValidationException $e) {

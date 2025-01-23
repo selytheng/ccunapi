@@ -127,36 +127,24 @@ class PartnerController extends Controller
     public function update(Request $req, $id)
     {
         try {
-            $validatedData = $req->validate([
+            $validator = $req->validate([
                 'name'          => ['required', 'string', Rule::unique('partners')],
-                'description' => ['nullable', 'string'], 
-                'logo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
             ]);
-    
+
             $updatePartner = Partner::find($id);
-    
+
             if (!$updatePartner) {
                 return response()->json(['message' => 'Partner not found.'], Response::HTTP_NOT_FOUND);
             }
-    
-          
-            if ($req->hasFile('logo')) {
-                $logoPath = $req->file('logo')->store('uploads/partners', 'public');
-                $validatedData['logo'] = $logoPath; 
-            }
-    
-            $updatePartner->update($validatedData);
-    
-            return response()->json($updatePartner, Response::HTTP_OK);
-    
+
+            $updatePartner->update($validator);
+            return response()->json($updatePartner, Response::HTTP_CREATED);
         } catch (ValidationException $e) {
             return $this->handleValidationException($e);
         } catch (\Exception $e) {
             return $this->handleUnexpectedException($e);
         }
     }
-    
-
 
     public function delete($id)
     {
@@ -201,7 +189,7 @@ class PartnerController extends Controller
     protected function storeImage($file, $folder)
     {
         $path = $file->store($folder, 'public');
-        return $path; 
+        return $path; // This will return something like 'uploads/partners/filename.jpg'
     }
 
 }

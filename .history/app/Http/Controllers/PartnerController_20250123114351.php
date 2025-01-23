@@ -124,38 +124,7 @@ class PartnerController extends Controller
         return response()->json($partners, Response::HTTP_OK);
     }
 
-    public function update(Request $req, $id)
-    {
-        try {
-            $validatedData = $req->validate([
-                'name'          => ['required', 'string', Rule::unique('partners')],
-                'description' => ['nullable', 'string'], 
-                'logo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
-            ]);
-    
-            $updatePartner = Partner::find($id);
-    
-            if (!$updatePartner) {
-                return response()->json(['message' => 'Partner not found.'], Response::HTTP_NOT_FOUND);
-            }
-    
-          
-            if ($req->hasFile('logo')) {
-                $logoPath = $req->file('logo')->store('uploads/partners', 'public');
-                $validatedData['logo'] = $logoPath; 
-            }
-    
-            $updatePartner->update($validatedData);
-    
-            return response()->json($updatePartner, Response::HTTP_OK);
-    
-        } catch (ValidationException $e) {
-            return $this->handleValidationException($e);
-        } catch (\Exception $e) {
-            return $this->handleUnexpectedException($e);
-        }
-    }
-    
+   
 
 
     public function delete($id)
