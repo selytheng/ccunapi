@@ -73,6 +73,8 @@ Route::group([
     Route::post('/', [EventController::class, 'create'])->middleware(Authorization::class . ':admin,partner');
     Route::get('/', [EventController::class, 'get']);
     Route::get('/{id}', [EventController::class, 'getById']);
-    Route::post('/{id}', [EventController::class, 'update'])->middleware(Authorization::class . ':admin,partner');
+    Route::put('/{id}', [EventController::class, 'update'])->middleware(Authorization::class . ':admin,partner');
     Route::delete('/{id}', [EventController::class, 'delete'])->middleware(Authorization::class . ':admin,partner');
+    Route::put('/{id}/deletegallery', [EventController::class, 'removeGalleryImages'])->middleware(Authorization::class . ':admin,partner'); // New Route
+    Route::put('/{id}/addgallery', [EventController::class, 'addGalleryImages'])->middleware(Authorization::class . ':admin,partner'); // New Route
 });
