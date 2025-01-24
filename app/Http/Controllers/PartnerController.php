@@ -9,41 +9,45 @@ use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Validator;
 use Storage;
+use App\Http\Controllers\PartnerContactController;
 
 class PartnerController extends Controller
 {
     public function create(Request $req)
-{
-    try {
-        $validator = Validator::make($req->all(), [
-            'name'        => ['required', 'string', Rule::unique('partners')],
-            'description' => ['required', 'string'],  
-            'logo'        => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
-        ]);
+    {
+        try {
+            $validator = Validator::make($req->all(), [
+                'name'        => ['required', 'string', Rule::unique('partners')],
+                'description' => ['required', 'string'],
+                'logo'        => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+            ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'errors' => $validator->errors()
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+            if ($validator->fails()) {
+                return response()->json([
+                    'errors' => $validator->errors()
+                ], Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+
+            $data = $validator->validated();
+            if ($req->hasFile('logo')) {
+                $logo = $this->storeImage($req->file('logo'), 'uploads/partners');
+                $data['logo'] = 'storage/' . $logo;
+            }
+
+            $partner = Partner::create($data);
+
+            // Call PartnerContactController to create empty contact
+            app(PartnerContactController::class)->createContact($partner->id);
+
+            return response()->json($partner, Response::HTTP_CREATED);
+        } catch (ValidationException $e) {
+            return $this->handleValidationException($e);
+        } catch (\Exception $e) {
+            return $this->handleUnexpectedException($e);
         }
-
-        $data = $validator->validated();
-        if ($req->hasFile('logo')) {
-            $logo = $this->storeImage($req->file('logo'), 'uploads/partners');
-            $data['logo'] = 'storage/' . $logo; 
-        }
-
-        $partner = Partner::create($data);
-
-        return response()->json($partner, Response::HTTP_CREATED);
-    } catch (ValidationException $e) {
-        return $this->handleValidationException($e);
-    } catch (\Exception $e) {
-        return $this->handleUnexpectedException($e);
     }
-}
 
-    
+
 
     public function get()
     {
@@ -129,33 +133,32 @@ class PartnerController extends Controller
         try {
             $validatedData = $req->validate([
                 'name'          => ['required', 'string', Rule::unique('partners')],
-                'description' => ['nullable', 'string'], 
+                'description' => ['nullable', 'string'],
                 'logo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
             ]);
-    
+
             $updatePartner = Partner::find($id);
-    
+
             if (!$updatePartner) {
                 return response()->json(['message' => 'Partner not found.'], Response::HTTP_NOT_FOUND);
             }
-    
-          
+
+
             if ($req->hasFile('logo')) {
                 $logoPath = $req->file('logo')->store('uploads/partners', 'public');
-                $validatedData['logo'] = $logoPath; 
+                $validatedData['logo'] = $logoPath;
             }
-    
+
             $updatePartner->update($validatedData);
-    
+
             return response()->json($updatePartner, Response::HTTP_OK);
-    
         } catch (ValidationException $e) {
             return $this->handleValidationException($e);
         } catch (\Exception $e) {
             return $this->handleUnexpectedException($e);
         }
     }
-    
+
 
 
     public function delete($id)
@@ -201,7 +204,6 @@ class PartnerController extends Controller
     protected function storeImage($file, $folder)
     {
         $path = $file->store($folder, 'public');
-        return $path; 
+        return $path;
     }
-
 }

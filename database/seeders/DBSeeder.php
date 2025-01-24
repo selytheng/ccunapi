@@ -16,7 +16,18 @@ class DBSeeder extends Seeder
         ]);
         DB::table('partners')->insert([
             ['id' => 1, 'name' => 'ITC'],
-            ['id' => 2, 'name' => 'RUPP'],
+        ]);
+        DB::table('partner_contacts')->insert([
+            [
+                'id' => 1,
+                'partner_id' => 1,
+                'phone_number' => json_encode(['(855) 12 818 830', '(855) 11 685 685']),
+                'email' => json_encode(['info@itc.edu.kh']),
+                'location_link' => 'https://maps.app.goo.gl/LU7LBnHQnQVf3x5JA',
+                'address' => 'Room 220B, Building B, PO Box 86, Russian Conf. Blvd., Phnom Penh, Cambodia',
+                'website' => 'www.itc.edu.kh',
+                'moodle_link' => 'moodle.itc.edu.kh',
+            ],
         ]);
         DB::table('years')->insert([
             ['id' => 1, 'name' => 'Year 1'],

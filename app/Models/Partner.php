@@ -33,6 +33,10 @@ class Partner extends Model
     {
         return $this->hasMany(Training::class);
     }
+    public function PartnerContact()
+    {
+        return $this->hasMany(PartnerContact::class);
+    }
     public function feedback()
     {
         return $this->hasMany(feedback::class);
