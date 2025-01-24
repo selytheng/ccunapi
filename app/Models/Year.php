@@ -19,4 +19,9 @@ class Year extends Model
     {
         return $this->hasMany(Event::class);
     }
+
+    public function training()
+    {
+        return $this->hasMany(Training::class);
+    }
 }

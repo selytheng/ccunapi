@@ -26,4 +26,9 @@ class Major extends Model
     {
         return $this->belongsTo(Partner::class);
     }
+
+    public function training()
+    {
+        return $this->hasMany(Training::class);
+    }
 }
