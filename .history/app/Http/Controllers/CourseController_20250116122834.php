@@ -3,14 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Services\FileUploadController;
-use App\Models\News;
+use App\Models\Course;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
 
-class EventController extends Controller
+class CourseController extends Controller
 {
     public function create(Request $req)
     {
@@ -25,16 +25,16 @@ class EventController extends Controller
             ]);
 
             // Handle image upload
-            $image = FileUploadController::storeImage($req->file('image'), 'uploads/events');
+            $image = FileUploadController::storeImage($req->file('image'), 'uploads/courses');
             $validator['image'] = $image;
 
             // Create product with timezone conversion
-            $event = News::create(array_merge($validator, [
+            $course = Course::create(array_merge($validator, [
                 'created_at' => Carbon::now('Asia/Phnom_Penh'),
                 'updated_at' => Carbon::now('Asia/Phnom_Penh'),
             ]));
 
-            return response()->json($event, Response::HTTP_CREATED);
+            return response()->json($course, Response::HTTP_CREATED);
         } catch (ValidationException $e) {
             return $this->handleValidationException($e);
         } catch (\Exception $e) {
@@ -47,31 +47,31 @@ class EventController extends Controller
         // validate name as an input to search the product
         $name = $req->input('name');
         if ($name) {    // search product
-            $products = News::where('name', 'like', '%' . $name . '%')->get();
+            $products = Course::where('name', 'like', '%' . $name . '%')->get();
             return response()->json($products, Response::HTTP_OK);
         } else {        //get all product
-            $products = News::all();
+            $products = Course::all();
             return response()->json($products, Response::HTTP_OK);
         }
     }
-    public function getAllEvents()
+    public function getAllCourses()
     {
         try {
             // Fetch all courses with their associated partner_id
-            $events = News::with('major.partner')->get()->map(function ($event) {
+            $courses = Course::with('major.partner')->get()->map(function ($course) {
                 return [
-                    'id' => $event->id,
-                    'name' => $event->name,
-                    'description' => $event->description,
-                    'image' => $event->image,
-                    'link' => $event->link,
-                    'major_id' => $event->major_id,
-                    'year_id' => $event->year_id,
-                    'partner_id' => $event->major->partner->id ?? null, // Use null if no partner is found
+                    'id' => $course->id,
+                    'name' => $course->name,
+                    'description' => $course->description,
+                    'image' => $course->image,
+                    'link' => $course->link,
+                    'major_id' => $course->major_id,
+                    'year_id' => $course->year_id,
+                    'partner_id' => $course->major->partner->id ?? null, // Use null if no partner is found
                 ];
             });
 
-            return response()->json($events, Response::HTTP_OK);
+            return response()->json($courses, Response::HTTP_OK);
         } catch (\Exception $e) {
             return $this->handleUnexpectedException($e);
         }
@@ -80,7 +80,7 @@ class EventController extends Controller
 
     public function getById($id)
     {
-        $produtcs = News::find($id);
+        $produtcs = Course::find($id);
         return response()->json($produtcs, Response::HTTP_OK);
     }
 
@@ -96,9 +96,9 @@ class EventController extends Controller
                 'link'           => 'nullable|string',
             ]);
 
-            $updateNews= News::find($id);
-            if (!$updateNews) {
-                return response()->json(['message' => 'Event not found'], Response::HTTP_NOT_FOUND);
+            $updateCourse = Course::find($id);
+            if (!$updateCourse) {
+                return response()->json(['message' => 'Course not found'], Response::HTTP_NOT_FOUND);
             }
 
             // Handle image upload if present
@@ -108,11 +108,11 @@ class EventController extends Controller
             }
 
             // Update the course with validated data and handle the update process
-            $updateNews->update(array_merge($validator, [
+            $updateCourse->update(array_merge($validator, [
                 'updated_at' => Carbon::now('Asia/Phnom_Penh'),
             ]));
 
-            return response()->json($updateNews, Response::HTTP_OK);
+            return response()->json($updateCourse, Response::HTTP_OK);
         } catch (ValidationException $e) {
             return $this->handleValidationException($e);
         } catch (\Exception $e) {
@@ -124,12 +124,12 @@ class EventController extends Controller
     public function delete($id)
     {
         try {
-            $deleteNews= News::find($id);
-            if (!$deleteNews) {
-                return response()->json(['message' => 'New not found'], Response::HTTP_NOT_FOUND);
+            $deleteCourse = Course::find($id);
+            if (!$deleteCourse) {
+                return response()->json(['message' => 'Course not found'], Response::HTTP_NOT_FOUND);
             }
-            $deleteNews->delete();
-            return response()->json(['message' => 'New deleted successfull.'], Response::HTTP_OK);
+            $deleteCourse->delete();
+            return response()->json(['message' => 'Course deleted successfull.'], Response::HTTP_OK);
         } catch (ValidationException $e) {
             return $this->handleValidationException($e);
         } catch (\Exception $e) {

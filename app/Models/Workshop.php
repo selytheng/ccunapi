@@ -2,24 +2,30 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Workshop extends Model
 {
- 
     protected $fillable = [
-        'major_id', 'year_id', 'name', 'description', 'image', 'link_registration'
+        'title',
+        'image',
+        'gallery_id',
+        'description',
+        'partner_id',
+        'location',
+        'status',
+        'start_date',
+        'end_date'
     ];
 
- 
-    public function major()
+    public function partner()
     {
-        return $this->belongsTo(Major::class);
+        return $this->belongsTo(Partner::class);
     }
 
- 
-    public function year()
+    public function gallery()
     {
-        return $this->belongsTo(Year::class);
+        return $this->belongsTo(Gallery::class);
     }
 }

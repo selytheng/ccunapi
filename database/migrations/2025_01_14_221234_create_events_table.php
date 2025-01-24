@@ -4,32 +4,27 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+class CreateEventsTable extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    public function up()
     {
         Schema::create('events', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('major_id');
-            $table->foreign('major_id')->references('id')->on('majors')->onDelete('cascade');
-            $table->unsignedBigInteger('year_id');
-            $table->foreign('year_id')->references('id')->on('years')->onDelete('cascade');
-            $table->string('name', 30);
+            $table->string('title');
+            $table->string('image');
+            $table->json('gallery')->nullable(); // Store multiple image paths as JSON
             $table->text('description');
-            $table->text('image')->nullable();
-            $table->string('link', 30);
+            $table->foreignId('partner_id')->constrained('partners')->onDelete('cascade');
+            $table->string('location');
+            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->timestamp('start_date');
+            $table->timestamp('end_date');
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
         Schema::dropIfExists('events');
     }
-};
+}
