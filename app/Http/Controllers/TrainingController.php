@@ -54,7 +54,7 @@ class TrainingController extends Controller
             return response()->json($products, Response::HTTP_OK);
         }
     }
-    public function getAllEvents()
+    public function getAllTraining()
     {
         try {
             // Fetch all courses with their associated partner_id

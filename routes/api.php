@@ -8,6 +8,8 @@ use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\MajorController;
 use App\Http\Controllers\YearController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\TrainingController;
+use App\Http\Controllers\WorkShopController;
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\Authorization;
 
@@ -77,4 +79,28 @@ Route::group([
     Route::delete('/{id}', [EventController::class, 'delete'])->middleware(Authorization::class . ':admin,partner');
     Route::put('/{id}/deletegallery', [EventController::class, 'removeGalleryImages'])->middleware(Authorization::class . ':admin,partner'); // New Route
     Route::put('/{id}/addgallery', [EventController::class, 'addGalleryImages'])->middleware(Authorization::class . ':admin,partner'); // New Route
+});
+
+
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'trainings'
+], function () {
+    Route::post('/', [TrainingController::class, 'create'])->middleware(Authorization::class . ':admin,partner');
+    Route::get('/', [TrainingController::class, 'get']);
+    Route::get('/{id}', [TrainingController::class, 'getById']);
+    Route::put('/{id}', [TrainingController::class, 'update'])->middleware(Authorization::class . ':admin,partner');
+    Route::delete('/{id}', [TrainingController::class, 'delete'])->middleware(Authorization::class . ':admin,partner');
+    Route::put('/{id}/remove-training', [TrainingController::class, 'removeTraining'])->middleware(Authorization::class . ':admin,partner');
+});
+
+Route::group([
+    'middleware' => 'api',
+    'prefix'     => 'workshops',
+], function () {
+    Route::post('/', [WorkShopController::class, 'create'])->middleware('auth:admin,partner');
+    Route::get('/', [WorkShopController::class, 'get']);
+    Route::get('/{id}', [WorkShopController::class, 'getById']);
+    Route::put('/{id}', [WorkShopController::class, 'update'])->middleware('auth:admin,partner');
+    Route::delete('/{id}', [WorkShopController::class, 'delete'])->middleware('auth:admin,partner');
 });
