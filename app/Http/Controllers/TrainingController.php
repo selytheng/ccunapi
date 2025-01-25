@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Services\FileUploadController;
-use App\Models\Training;
+use App\Models\Trainings;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -15,7 +15,7 @@ class TrainingController extends Controller
     public function create(Request $req)
     {
         try {
-            $validator = $req->validate([ 
+            $validator = $req->validate([
                 'name'          => 'required|string',
                 'major_id'   => 'required|integer|exists:majors,id',
                 'year_id'   => 'required|integer|exists:years,id',
@@ -29,7 +29,7 @@ class TrainingController extends Controller
             $validator['image'] = $image;
 
             // Create product with timezone conversion
-            $event = Training::create(array_merge($validator, [
+            $event = Trainings::create(array_merge($validator, [
                 'created_at' => Carbon::now('Asia/Phnom_Penh'),
                 'updated_at' => Carbon::now('Asia/Phnom_Penh'),
             ]));
@@ -47,10 +47,10 @@ class TrainingController extends Controller
         // validate name as an input to search the product
         $name = $req->input('name');
         if ($name) {    // search product
-            $products = Training::where('name', 'like', '%' . $name . '%')->get();
+            $products = Trainings::where('name', 'like', '%' . $name . '%')->get();
             return response()->json($products, Response::HTTP_OK);
         } else {        //get all product
-            $products = Training::all();
+            $products = Trainings::all();
             return response()->json($products, Response::HTTP_OK);
         }
     }
@@ -58,7 +58,7 @@ class TrainingController extends Controller
     {
         try {
             // Fetch all courses with their associated partner_id
-            $events = Training::with('major.partner')->get()->map(function ($event) {
+            $events = Trainings::with('major.partner')->get()->map(function ($event) {
                 return [
                     'id' => $event->id,
                     'name' => $event->name,
@@ -80,7 +80,7 @@ class TrainingController extends Controller
 
     public function getById($id)
     {
-        $produtcs = Training::find($id);
+        $produtcs = Trainings::find($id);
         return response()->json($produtcs, Response::HTTP_OK);
     }
 
@@ -96,7 +96,7 @@ class TrainingController extends Controller
                 'link'           => 'nullable|string',
             ]);
 
-            $updateEvent= Training::find($id);
+            $updateEvent = Trainings::find($id);
             if (!$updateEvent) {
                 return response()->json(['message' => 'Event not found'], Response::HTTP_NOT_FOUND);
             }
@@ -124,7 +124,7 @@ class TrainingController extends Controller
     public function delete($id)
     {
         try {
-            $deleteEvent= Training::find($id);
+            $deleteEvent = Trainings::find($id);
             if (!$deleteEvent) {
                 return response()->json(['message' => 'Event not found'], Response::HTTP_NOT_FOUND);
             }

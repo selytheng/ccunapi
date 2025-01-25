@@ -12,6 +12,8 @@ use App\Http\Controllers\TrainingController;
 use App\Http\Controllers\WorkShopController;
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\Authorization;
+use App\Http\Controllers\FeedbackController;
+use App\Http\Controllers\PartnerContactController;
 
 Route::group([
     'middleware' => 'api',
@@ -79,6 +81,24 @@ Route::group([
     Route::delete('/{id}', [EventController::class, 'delete'])->middleware(Authorization::class . ':admin,partner');
     Route::put('/{id}/deletegallery', [EventController::class, 'removeGalleryImages'])->middleware(Authorization::class . ':admin,partner'); // New Route
     Route::put('/{id}/addgallery', [EventController::class, 'addGalleryImages'])->middleware(Authorization::class . ':admin,partner'); // New Route
+});
+
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'contacts'
+], function () {
+    // Route::post('/{id}/contact', [PartnerContactController::class, 'createContact'])->middleware(Authorization::class . ':admin,partner');
+    Route::get('/partner/{id}', [PartnerContactController::class, 'getContactByPartnerId']);
+    Route::put('/partner/{id}', [PartnerContactController::class, 'updateContact'])->middleware(Authorization::class . ':admin,partner');
+});
+
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'feedback'
+], function () {
+    Route::post('/', [FeedbackController::class, 'createFeedback']);
+    Route::get('/partner/{id}', [FeedbackController::class, 'getFeedbackByPartnerId'])->middleware(Authorization::class . ':admin,partner');
+    Route::get('/{id}', [FeedbackController::class, 'getFeedbackById'])->middleware(Authorization::class . ':admin,partner');
 });
 
 
