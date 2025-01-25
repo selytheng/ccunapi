@@ -132,9 +132,9 @@ class PartnerController extends Controller
     {
         try {
             $validatedData = $req->validate([
-                'name'          => ['required', 'string', Rule::unique('partners')],
-                'description' => ['nullable', 'string'],
-                'logo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+                'name'          => ['required', 'string', Rule::unique('partners')->ignore($id)], // Updated validation rule
+                'description'   => ['nullable', 'string'],
+                'logo'          => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
             ]);
 
             $updatePartner = Partner::find($id);
@@ -142,7 +142,6 @@ class PartnerController extends Controller
             if (!$updatePartner) {
                 return response()->json(['message' => 'Partner not found.'], Response::HTTP_NOT_FOUND);
             }
-
 
             if ($req->hasFile('logo')) {
                 $logoPath = $req->file('logo')->store('uploads/partners', 'public');
@@ -158,8 +157,6 @@ class PartnerController extends Controller
             return $this->handleUnexpectedException($e);
         }
     }
-
-
 
     public function delete($id)
     {

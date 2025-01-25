@@ -77,10 +77,10 @@ class MajorController extends Controller
     public function update(Request $req, $id)
     {
         try {
-            $validator = $req->validate([
-                'name'          => ['required', 'string', Rule::unique('majors')],
-                'description' => ['nullable', 'string'],
-                'logo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+            $validatedData = $req->validate([ // Store validated data
+                'name'          => ['required', 'string', Rule::unique('majors')->ignore($id)],
+                'description'   => ['nullable', 'string'],
+                'logo'          => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
             ]);
 
             $updateMajor = Major::find($id);
@@ -94,14 +94,17 @@ class MajorController extends Controller
                 $validatedData['logo'] = $logoPath;
             }
 
-            $updateMajor->update($validator);
-            return response()->json($updateMajor, Response::HTTP_CREATED);
+            // Use the validated data for updating
+            $updateMajor->update($validatedData);
+
+            return response()->json($updateMajor, Response::HTTP_OK); // HTTP_OK instead of HTTP_CREATED for update
         } catch (ValidationException $e) {
             return $this->handleValidationException($e);
         } catch (\Exception $e) {
             return $this->handleUnexpectedException($e);
         }
     }
+
 
     public function delete($id)
     {
@@ -140,5 +143,11 @@ class MajorController extends Controller
             ],
             Response::HTTP_INTERNAL_SERVER_ERROR
         );
+    }
+
+    protected function storeImage($file, $folder)
+    {
+        $path = $file->store($folder, 'public');
+        return $path;
     }
 }
