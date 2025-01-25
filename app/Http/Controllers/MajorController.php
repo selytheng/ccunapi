@@ -17,6 +17,8 @@ class MajorController extends Controller
             $validator = Validator::make($req->all(), [
                 'name'          => ['required', 'string', Rule::unique('majors')],
                 'partner_id'   => 'required|string',
+                'description' => ['required', 'string'],
+                'logo'        => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
             ]);
 
             if ($validator->fails()) {
@@ -26,6 +28,11 @@ class MajorController extends Controller
             }
 
             $data = $validator->validated();
+            if ($req->hasFile('logo')) {
+                $logo = $this->storeImage($req->file('logo'), 'uploads/majors');
+                $data['logo'] = 'storage/' . $logo;
+            }
+
             $major = Major::create($data);
 
             return response()->json($major, Response::HTTP_CREATED);
@@ -72,12 +79,19 @@ class MajorController extends Controller
         try {
             $validator = $req->validate([
                 'name'          => ['required', 'string', Rule::unique('majors')],
+                'description' => ['nullable', 'string'],
+                'logo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
             ]);
 
             $updateMajor = Major::find($id);
 
             if (!$updateMajor) {
                 return response()->json(['message' => 'Major not found.'], Response::HTTP_NOT_FOUND);
+            }
+
+            if ($req->hasFile('logo')) {
+                $logoPath = $req->file('logo')->store('uploads/majors', 'public');
+                $validatedData['logo'] = $logoPath;
             }
 
             $updateMajor->update($validator);

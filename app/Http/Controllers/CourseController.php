@@ -80,9 +80,30 @@ class CourseController extends Controller
 
     public function getById($id)
     {
-        $produtcs = Course::find($id);
-        return response()->json($produtcs, Response::HTTP_OK);
+        try {
+            $course = Course::with('major.partner')->find($id);
+
+            if (!$course) {
+                return response()->json(['message' => 'Course not found'], Response::HTTP_NOT_FOUND);
+            }
+
+            $response = [
+                'id'          => $course->id,
+                'name'        => $course->name,
+                'description' => $course->description,
+                'image'       => $course->image,
+                'link'        => $course->link,
+                'major_id'    => $course->major_id,
+                'year_id'     => $course->year_id,
+                'partner_id'  => $course->major->partner->id ?? null, // Use null if no partner is found
+            ];
+
+            return response()->json($response, Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return $this->handleUnexpectedException($e);
+        }
     }
+
 
     public function update(Request $req, $id)
     {

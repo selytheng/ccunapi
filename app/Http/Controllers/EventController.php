@@ -22,6 +22,8 @@ class EventController extends Controller
                 'gallery.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
                 'description' => 'required|string',
                 'partner_id' => 'required|integer|exists:partners,id',
+                'co_host' => 'nullable|array',
+                'sponsor' => 'nullable|array',
                 'location' => 'required|string',
                 'status' => 'required|in:active,inactive',
                 'start_date' => 'required|date',
@@ -82,6 +84,8 @@ class EventController extends Controller
             $validator = $req->validate([
                 'title'         => 'required|string',
                 'partner_id'    => 'integer|exists:partners,id',
+                'co_host'       => 'nullable|array',
+                'sponsor'       => 'nullable|array',
                 'image'         => 'image|mimes:jpeg,png,jpg,gif|max:2048',
                 'description'   => 'nullable|string',  // Changed to nullable
                 'location'      => 'nullable|string',

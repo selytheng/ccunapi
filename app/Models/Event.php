@@ -12,6 +12,8 @@ class Event extends Model
         'gallery',
         'description',
         'partner_id',
+        'co_host',
+        'sponsor',
         'location',
         'status',
         'start_date',

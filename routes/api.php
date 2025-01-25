@@ -38,7 +38,7 @@ Route::group([
     Route::post('/', [PartnerController::class, 'create'])->middleware(Authorization::class . ':admin,partner');
     Route::get('/', [PartnerController::class, 'get']);
     Route::get('/{id}', [PartnerController::class, 'getById']);
-    Route::patch('/{id}', [PartnerController::class, 'update'])->middleware(Authorization::class . ':admin,partner');
+    Route::put('/{id}', [PartnerController::class, 'update'])->middleware(Authorization::class . ':admin,partner');
     Route::delete('/{id}', [PartnerController::class, 'delete'])->middleware(Authorization::class . ':admin,partner');
     Route::get('/{id}/majors', [PartnerController::class, 'getAllMajorInPartner']);
     Route::get('/{id}/courses', [PartnerController::class, 'getAllCoursesInPartner']);
@@ -53,7 +53,7 @@ Route::group([
     Route::post('/', [MajorController::class, 'create'])->middleware(Authorization::class . ':admin,partner');
     Route::get('/', [MajorController::class, 'get']);
     Route::get('/{id}', [MajorController::class, 'getById']);
-    Route::patch('/{id}', [MajorController::class, 'update'])->middleware(Authorization::class . ':admin,partner');
+    Route::put('/{id}', [MajorController::class, 'update'])->middleware(Authorization::class . ':admin,partner');
     Route::delete('/{id}', [MajorController::class, 'delete'])->middleware(Authorization::class . ':admin,partner');
     Route::get('/{id}/courses', [MajorController::class, 'getAllCoursesInMajor']);
 });

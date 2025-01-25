@@ -15,6 +15,8 @@ class CreateEventsTable extends Migration
             $table->json('gallery')->nullable(); // Store multiple image paths as JSON
             $table->text('description');
             $table->foreignId('partner_id')->constrained('partners')->onDelete('cascade');
+            $table->json('co_host')->nullable();
+            $table->json('sponsor')->nullable();
             $table->string('location');
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamp('start_date');
