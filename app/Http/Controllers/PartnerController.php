@@ -71,24 +71,31 @@ class PartnerController extends Controller
         }
     }
 
+
     public function getAllCoursesInPartner($id)
     {
         try {
-            $partner = Partner::find($id);
+            $partner = Partner::with('majors.courses')->find($id);
+
             if (!$partner) {
                 return response()->json(['message' => 'Partner not found.'], Response::HTTP_NOT_FOUND);
             }
 
-            // Retrieve all courses through the partner's majors
+            // Extract only needed fields
             $courses = $partner->majors->flatMap(function ($major) {
-                return $major->courses;
+                return $major->courses->map(function ($course) {
+                    return [
+                        'id' => $course->id,
+                        'name' => $course->name,
+                        'description' => $course->description,
+                        'image' => $course->image
+                    ];
+                });
             });
 
             return response()->json($courses, Response::HTTP_OK);
-        } catch (ValidationException $e) {
-            return $this->handleValidationException($e);
         } catch (\Exception $e) {
-            return $this->handleUnexpectedException($e);
+            return response()->json(['message' => 'An error occurred.', 'error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -118,6 +125,57 @@ class PartnerController extends Controller
         }
     }
 
+    public function getAllTrainingsInPartner($id)
+    {
+        try {
+            $partner = Partner::find($id);
+            if (!$partner) {
+                return response()->json(['message' => 'Partner not found.'], Response::HTTP_NOT_FOUND);
+            }
+
+            // Retrieve all trainings related to the partner
+            $trainings = $partner->trainings->map(function ($trainings) {
+                return [
+                    'id'          => $trainings->id,
+                    'title'       => $trainings->title,
+                    'description' => $trainings->description,
+                    'image'       => $trainings->image,
+                ];
+            });
+
+            return response()->json($trainings, Response::HTTP_OK);
+        } catch (ValidationException $e) {
+            return $this->handleValidationException($e);
+        } catch (\Exception $e) {
+            return $this->handleUnexpectedException($e);
+        }
+    }
+
+    public function getAllWorkshopsInPartner($id)
+    {
+        try {
+            $partner = Partner::find($id);
+            if (!$partner) {
+                return response()->json(['message' => 'Partner not found.'], Response::HTTP_NOT_FOUND);
+            }
+
+            // Retrieve all workshops related to the partner
+            $workshops = $partner->workshops->map(function ($workshop) {
+                return [
+                    'id'          => $workshop->id,
+                    'title'       => $workshop->title,
+                    'description' => $workshop->description,
+                    'image'       => $workshop->image,
+                ];
+            });
+
+            return response()->json($workshops, Response::HTTP_OK);
+        } catch (ValidationException $e) {
+            return $this->handleValidationException($e);
+        } catch (\Exception $e) {
+            return $this->handleUnexpectedException($e);
+        }
+    }
 
     public function getById($id)
     {

@@ -9,7 +9,7 @@ use App\Http\Controllers\MajorController;
 use App\Http\Controllers\YearController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\TrainingController;
-use App\Http\Controllers\WorkShopController;
+use App\Http\Controllers\WorkshopController;
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\Authorization;
 use App\Http\Controllers\FeedbackController;
@@ -43,6 +43,8 @@ Route::group([
     Route::get('/{id}/majors', [PartnerController::class, 'getAllMajorInPartner']);
     Route::get('/{id}/courses', [PartnerController::class, 'getAllCoursesInPartner']);
     Route::get('/{id}/events', [PartnerController::class, 'getAllEventsInPartner']);
+    Route::get('/{id}/trainings', [PartnerController::class, 'getAllTrainingsInPartner']);
+    Route::get('/{id}/workshops', [PartnerController::class, 'getAllWorkshopsInPartner']);
 });
 
 Route::group([
@@ -102,25 +104,34 @@ Route::group([
 });
 
 
-Route::group([
-    'middleware' => 'api',
-    'prefix' => 'trainings'
-], function () {
-    Route::post('/', [TrainingController::class, 'create'])->middleware(Authorization::class . ':admin,partner');
-    Route::get('/', [TrainingController::class, 'get']);
-    Route::get('/{id}', [TrainingController::class, 'getById']);
-    Route::put('/{id}', [TrainingController::class, 'update'])->middleware(Authorization::class . ':admin,partner');
-    Route::delete('/{id}', [TrainingController::class, 'delete'])->middleware(Authorization::class . ':admin,partner');
-    Route::put('/{id}/remove-training', [TrainingController::class, 'removeTraining'])->middleware(Authorization::class . ':admin,partner');
-});
+Route::group(
+    [
+        'middleware' => 'api',
+        'prefix' => 'trainings'
+    ],
+    function () {
+        Route::post('/', [TrainingController::class, 'create'])->middleware(Authorization::class . ':admin,partner');
+        Route::get('/', [TrainingController::class, 'get']);
+        Route::get('/{id}', [TrainingController::class, 'getById']);
+        Route::put('/{id}', [TrainingController::class, 'update'])->middleware(Authorization::class . ':admin,partner');
+        Route::delete('/{id}', [TrainingController::class, 'delete'])->middleware(Authorization::class . ':admin,partner');
+        Route::put('/{id}/deletegallery', [TrainingController::class, 'removeGalleryImages'])->middleware(Authorization::class . ':admin,partner'); // New Route
+        Route::put('/{id}/addgallery', [TrainingController::class, 'addGalleryImages'])->middleware(Authorization::class . ':admin,partner'); // New Route
+    }
+);
 
-Route::group([
-    'middleware' => 'api',
-    'prefix'     => 'workshops',
-], function () {
-    Route::post('/', [WorkShopController::class, 'create'])->middleware('auth:admin,partner');
-    Route::get('/', [WorkShopController::class, 'get']);
-    Route::get('/{id}', [WorkShopController::class, 'getById']);
-    Route::put('/{id}', [WorkShopController::class, 'update'])->middleware('auth:admin,partner');
-    Route::delete('/{id}', [WorkShopController::class, 'delete'])->middleware('auth:admin,partner');
-});
+Route::group(
+    [
+        'middleware' => 'api',
+        'prefix' => 'workshops'
+    ],
+    function () {
+        Route::post('/', [WorkshopController::class, 'create'])->middleware(Authorization::class . ':admin,partner');
+        Route::get('/', [WorkshopController::class, 'get']);
+        Route::get('/{id}', [WorkshopController::class, 'getById']);
+        Route::put('/{id}', [WorkshopController::class, 'update'])->middleware(Authorization::class . ':admin,partner');
+        Route::delete('/{id}', [WorkshopController::class, 'delete'])->middleware(Authorization::class . ':admin,partner');
+        Route::put('/{id}/deletegallery', [WorkshopController::class, 'removeGalleryImages'])->middleware(Authorization::class . ':admin,partner'); // New Route
+        Route::put('/{id}/addgallery', [WorkshopController::class, 'addGalleryImages'])->middleware(Authorization::class . ':admin,partner'); // New Route
+    }
+);

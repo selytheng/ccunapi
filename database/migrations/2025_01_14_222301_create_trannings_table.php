@@ -6,24 +6,32 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
     {
-        Schema::create('trainings', function (Blueprint $table) {
+        Schema::create('trainings', function (Blueprint $table) { // Use a different table name if needed
             $table->id();
             $table->string('title');
             $table->string('image');
-            $table->foreignId('gallery_id')->constrained();
-            $table->string('description');
-            $table->foreignId('partner_id')->constrained();
+            $table->json('gallery')->nullable();
+            $table->text('description');
+            $table->foreignId('partner_id')->constrained('partners')->onDelete('cascade');
+            $table->json('co_host')->nullable();
+            $table->json('sponsor')->nullable();
             $table->string('location');
-            $table->string('status');
-            $table->string('start_date');
-            $table->string('end_date');
+            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->timestamp('start_date');
+            $table->timestamp('end_date');
             $table->timestamps();
         });
     }
 
-    public function down()
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
     {
         Schema::dropIfExists('trainings');
     }
