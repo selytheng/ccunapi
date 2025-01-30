@@ -202,8 +202,8 @@ class PartnerController extends Controller
             }
 
             if ($req->hasFile('logo')) {
-                $logoPath = $req->file('logo')->store('uploads/partners', 'public');
-                $validatedData['logo'] = $logoPath;
+                $logo = $this->storeImage($req->file('logo'), 'uploads/partners');
+                $validatedData['logo'] = 'storage/' . $logo;
             }
 
             $updatePartner->update($validatedData);
