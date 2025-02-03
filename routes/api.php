@@ -15,6 +15,10 @@ use App\Http\Middleware\Authorization;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\PartnerContactController;
 
+Route::get('/health', function () {
+    return response()->json(['status' => 'healthy']);
+});
+
 Route::group([
     'middleware' => 'api',
     'prefix' => 'auth'

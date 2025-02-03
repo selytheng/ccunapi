@@ -23,9 +23,9 @@ class DBSeeder extends Seeder
                 'partner_id' => 1,
                 'phone_number' => json_encode(['(855) 12 818 830', '(855) 11 685 685']),
                 'email' => json_encode(['info@itc.edu.kh']),
-                'location_link' => 'https://maps.app.goo.gl/LU7LBnHQnQVf3x5JA',
-                'address' => 'Room 220B, Building B, PO Box 86, Russian Conf. Blvd., Phnom Penh, Cambodia',
-                'website' => 'www.itc.edu.kh',
+                'location_link' => 'https://maps.google.com/maps?q=11.570363892494523,104.8981422185898&z=15&output=embed',
+                'address' => 'PO Box 86, Russian Federation Blvd., Sangkat Teuklaak 1, Khan Toul Kork, 120404, Phnom Penh, Cambodia',
+                'website' => 'itc.edu.kh',
                 'moodle_link' => 'moodle.itc.edu.kh',
             ],
         ]);
